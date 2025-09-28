@@ -13,7 +13,7 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: { origin: 'https://mern-quizwalsis-steel.vercel.app' , methods: ["GET", "POST"]}, transports: ['polling'] });
+const io = new Server(httpServer, { cors: { origin: '*' , methods: ["GET", "POST"]}, transports: ['polling'] });
 
 app.use(cors());
 app.use(express.json());
