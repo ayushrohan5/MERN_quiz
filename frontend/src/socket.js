@@ -1,3 +1,3 @@
 import { io } from 'socket.io-client'
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://mern-quizwalsis-steel.vercel.app'
-export const createSocket = () => io(SOCKET_URL, { transports: ['websocket'] })
+export const createSocket = () => io(SOCKET_URL, { transports: ['polling'] })
