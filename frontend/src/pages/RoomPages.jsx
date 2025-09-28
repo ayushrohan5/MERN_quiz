@@ -50,6 +50,8 @@ useEffect(() => {
       setQuestion(null);
       setQuizEnded(true);
       localStorage.setItem(`quizEnded_${code}`, 'true');
+      localStorage.removeItem(`currentIndex_${code}_${nameRef.current}`);
+  localStorage.removeItem(`quizQuestions_${code}`);
     });
 
     socket.on('leaderboard', lb => setLeaderboard(lb));
@@ -61,6 +63,28 @@ useEffect(() => {
   useEffect(() => {
     if (isHost) connectSocket();
   }, [code, isHost]);
+
+useEffect(() => {
+  // Load saved question index if available
+  const savedIndex = localStorage.getItem(`currentIndex_${code}_${nameRef.current}`);
+  if (savedIndex) {
+    setCurrentIndex(Number(savedIndex));
+  }
+
+  const savedQuestions = localStorage.getItem(`quizQuestions_${code}`);
+  if (savedQuestions) {
+    setQuizQuestions(JSON.parse(savedQuestions));
+    setQuestion(JSON.parse(savedQuestions)[savedIndex || 0]);
+  }
+}, [code]);
+
+
+useEffect(() => {
+  if (question) {
+    localStorage.setItem(`currentIndex_${code}_${nameRef.current}`, currentIndex);
+    localStorage.setItem(`quizQuestions_${code}`, JSON.stringify(quizQuestions));
+  }
+}, [currentIndex, question, code, quizQuestions]);
 
   // ---------------- START QUIZ (HOST) ----------------
   function startAsHost() {
@@ -79,13 +103,7 @@ useEffect(() => {
   }
 
   // ---------------- NEXT QUESTION ----------------
-  function nextQuestion() {
-    if (!socketRef.current) return;
-    socketRef.current.emit('nextQuestion', {
-      roomCode: code,
-      playerName: nameRef.current, // only needed if backend uses it
-    });
-  }
+ 
 
   return (
     <div className="bg-white p-6 rounded shadow max-w-2xl mx-auto mt-6">
